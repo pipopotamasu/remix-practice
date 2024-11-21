@@ -1,4 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
+import { css } from "@emotion/react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -7,6 +8,10 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+const hoge = css`
+  color: red;
+`;
+
 export default function Index() {
-  return <p>test</p>;
+  return <p css={hoge}>test</p>;
 }

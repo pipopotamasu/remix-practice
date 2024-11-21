@@ -11,10 +11,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@emotion/cache": "^11.13.5",
     "@emotion/react": "^11.13.5",
-    "@emotion/server": "^11.11.0",
-    "@emotion/styled": "^11.13.5",
     "@remix-run/node": "^2.14.0",
     "@remix-run/react": "^2.14.0",
     "@remix-run/serve": "^2.14.0",
