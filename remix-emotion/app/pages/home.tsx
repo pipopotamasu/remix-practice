@@ -1,4 +1,4 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "react-router";
 import { css } from "@emotion/react";
 
 export const meta: MetaFunction = () => {
