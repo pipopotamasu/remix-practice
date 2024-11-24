@@ -8,10 +8,19 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-const hoge = css`
+const redText = css`
   color: red;
 `;
 
+const blueText = css`
+  color: blue;
+`;
+
 export default function Index() {
-  return <p css={hoge}>test</p>;
+  return (
+    <>
+      <p css={redText}>test</p>
+      <p css={blueText}>test</p>
+    </>
+  );
 }
