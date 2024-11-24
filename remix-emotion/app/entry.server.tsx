@@ -10,7 +10,10 @@ import type { AppLoadContext, EntryContext } from "react-router";
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { ServerRouter } from "react-router";
 import { isbot } from "isbot";
-import { renderToPipeableStream } from "react-dom/server";
+import { renderToPipeableStream, renderToString } from "react-dom/server";
+import createEmotionServer from "@emotion/server/create-instance";
+import { CacheProvider } from "@emotion/react";
+import { createEmotionCache, key } from "~/styles/createEmotionCache";
 
 // Reject/cancel all pending promises after 5 seconds
 export const streamTimeout = 5000;
@@ -32,7 +35,7 @@ export default function handleRequest(
         responseHeaders,
         reactRouterContext
       )
-    : handleBrowserRequest(
+    : handleRequestWithoutStream(
         request,
         responseStatusCode,
         responseHeaders,
@@ -84,6 +87,35 @@ function handleBotRequest(
     // Automatically timeout the React renderer after 6 seconds, which ensures
     // React has enough time to flush down the rejected boundary contents
     setTimeout(abort, streamTimeout + 1000);
+  });
+}
+
+function handleRequestWithoutStream(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext
+) {
+  const cache = createEmotionCache();
+  const { extractCritical } = createEmotionServer(cache);
+
+  const html = renderToString(
+    <CacheProvider value={cache}>
+      <ServerRouter context={remixContext} url={request.url} />
+    </CacheProvider>
+  );
+
+  const { css, ids } = extractCritical(html);
+  const insertStyle = `<style data-emotion="${key} ${ids.join(
+    " "
+  )}">${css}</style>`;
+  const markup = html.replace("</head>", `${insertStyle}</head>`);
+
+  responseHeaders.set("Content-Type", "text/html");
+
+  return new Response(`<!DOCTYPE html>${markup}`, {
+    status: responseStatusCode,
+    headers: responseHeaders,
   });
 }
 
